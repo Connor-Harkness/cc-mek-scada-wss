@@ -15,7 +15,7 @@ local ws_connection = {
     url = "",
     handle = nil,
     reconnect_timer = nil,
-    reconnect_interval = 5.0,  -- seconds
+    reconnect_interval = 5000,  -- milliseconds (5 seconds)
     last_send_time = 0,
     send_queue = {}
 }
