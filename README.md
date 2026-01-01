@@ -47,6 +47,28 @@ You can install this on a ComputerCraft computer using either:
 * `pastebin get sqUN6VUb ccmsi.lua`
 * Off-line (when HTTP is disabled) installation via [release bundles](https://github.com/MikaylaFischler/cc-mek-scada/wiki/Alternative-Installation-Strategies#release-bundles)
 
+## WebSocket Control Panel
+
+**New Feature:** The coordinator can now forward all monitor display data to a WebSocket server for remote monitoring and control panel functionality!
+
+### Features
+- 🌐 Real-time data forwarding to external WebSocket servers
+- 🔄 Automatic reconnection on connection loss
+- 📊 JSON-formatted facility and unit status updates
+- ⚙️ Easy configuration via coordinator settings
+- 🔌 Non-invasive - works alongside existing functionality
+
+### Quick Start
+1. Enable in coordinator configurator or settings:
+   ```lua
+   settings.set("WebSocketEnabled", true)
+   settings.set("WebSocketURL", "ws://your-server:8080")
+   ```
+2. Restart coordinator
+3. Connect your WebSocket server to receive real-time SCADA data
+
+See [WEBSOCKET.md](WEBSOCKET.md) for complete documentation, data formats, and example server implementations.
+
 ## Contributing
 
 Please reach out to me via Discord or email (or GitHub in some way) if you are thinking of making any contributions at this time. I started this project as a challenge for myself and have been enjoying having something I can work on in my own way. 
