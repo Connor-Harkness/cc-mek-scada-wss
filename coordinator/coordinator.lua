@@ -125,6 +125,8 @@ function coordinator.load_config()
     cfv.assert_type_int(config.ColorMode)
     cfv.assert_range(config.ColorMode, 1, themes.COLOR_MODE.NUM_MODES)
 
+    if config.WebSocketEnabled == nil then config.WebSocketEnabled = false end
+    if config.WebSocketURL == nil then config.WebSocketURL = "" end
     cfv.assert_type_bool(config.WebSocketEnabled)
     cfv.assert_type_str(config.WebSocketURL)
 

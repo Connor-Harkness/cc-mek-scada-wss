@@ -45,6 +45,12 @@ function websocket.connect()
         return true
     end
     
+    -- check if URL is valid
+    if ws_connection.url == "" or ws_connection.url == nil then
+        log.warning("WS: Cannot connect - WebSocket URL is not configured")
+        return false
+    end
+    
     -- attempt HTTP WebSocket connection
     local success, handle = pcall(function()
         return http.websocket(ws_connection.url)
