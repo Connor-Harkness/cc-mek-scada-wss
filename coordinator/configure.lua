@@ -154,6 +154,8 @@ local fields = {
     { "API_Timeout", "API Connection Timeout", 5 },
     { "TrustedRange", "Trusted Range", 0 },
     { "AuthKey", "Facility Auth Key" , ""},
+    { "WebSocketEnabled", "WebSocket Enabled", false },
+    { "WebSocketURL", "WebSocket URL", "" },
     { "LogMode", "Log Mode", log.MODE.APPEND },
     { "LogPath", "Log Path", "/log.txt" },
     { "LogDebug", "Log Debug Messages", false },

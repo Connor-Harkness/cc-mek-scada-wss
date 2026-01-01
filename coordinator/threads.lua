@@ -75,6 +75,9 @@ function threads.thread__main(smem)
                     -- toggle heartbeat
                     iocontrol.heartbeat()
 
+                    -- update WebSocket connection
+                    iocontrol.update_websocket()
+
                     -- periodic hardware tasks
                     backplane.periodic()
 

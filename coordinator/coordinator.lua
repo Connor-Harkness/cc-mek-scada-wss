@@ -68,6 +68,9 @@ function coordinator.load_config()
     config.FrontPanelTheme = settings.get("FrontPanelTheme")
     config.ColorMode = settings.get("ColorMode")
 
+    config.WebSocketEnabled = settings.get("WebSocketEnabled")
+    config.WebSocketURL = settings.get("WebSocketURL")
+
     local cfv = util.new_validator()
 
     cfv.assert_type_int(config.UnitCount)
@@ -121,6 +124,9 @@ function coordinator.load_config()
     cfv.assert_range(config.FrontPanelTheme, 1, 2)
     cfv.assert_type_int(config.ColorMode)
     cfv.assert_range(config.ColorMode, 1, themes.COLOR_MODE.NUM_MODES)
+
+    cfv.assert_type_bool(config.WebSocketEnabled)
+    cfv.assert_type_str(config.WebSocketURL)
 
     return cfv.valid()
 end
@@ -715,6 +721,9 @@ function coordinator.comms(version, backplane, sv_watchdog)
 
                                         -- init io controller
                                         iocontrol.init(conf, public, config.TempScale, config.EnergyScale)
+
+                                        -- init WebSocket client
+                                        iocontrol.init_websocket(config.WebSocketURL or "", config.WebSocketEnabled or false)
 
                                         self.sv_addr = src_addr
                                         self.sv_linked = true
