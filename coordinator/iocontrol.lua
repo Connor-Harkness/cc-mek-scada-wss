@@ -6,6 +6,7 @@ local log     = require("scada-common.log")
 local psil    = require("scada-common.psil")
 local types   = require("scada-common.types")
 local util    = require("scada-common.util")
+local websocket = require("scada-common.websocket")
 
 local process = require("coordinator.process")
 local sounder = require("coordinator.sounder")
@@ -299,6 +300,27 @@ end
 
 -- toggle heartbeat indicator
 function iocontrol.heartbeat() io.fp.ps.toggle("heartbeat") end
+
+-- initialize WebSocket client
+---@param ws_url string WebSocket server URL
+---@param enabled boolean whether WebSocket forwarding is enabled
+function iocontrol.init_websocket(ws_url, enabled)
+    websocket.init(ws_url, enabled)
+    if enabled then
+        websocket.connect()
+    end
+end
+
+-- update WebSocket connection status
+function iocontrol.update_websocket()
+    websocket.update()
+end
+
+-- get WebSocket connection status
+---@return boolean connected, boolean enabled
+function iocontrol.get_websocket_status()
+    return websocket.is_connected(), websocket.is_enabled()
+end
 
 -- report versions to front panel
 ---@param firmware_v string coordinator version
@@ -899,6 +921,26 @@ function iocontrol.update_facility_status(status)
 
         fac.ps.publish("rtu_count", fac.rtu_count)
 
+        -- forward facility data to WebSocket if enabled
+        if websocket.is_enabled() then
+            local ws_data = {
+                all_sys_ok = fac.all_sys_ok,
+                auto_ready = fac.auto_ready,
+                auto_active = fac.auto_active,
+                auto_ramping = fac.auto_ramping,
+                auto_saturated = fac.auto_saturated,
+                auto_scram = fac.auto_scram,
+                ascram_status = fac.ascram_status,
+                status_lines = fac.status_lines,
+                rtu_count = fac.rtu_count,
+                radiation = fac.radiation,
+                induction_data = fac.induction_data_tbl,
+                sps_data = fac.sps_data_tbl,
+                tank_data = fac.tank_data_tbl
+            }
+            websocket.send_facility_status(ws_data)
+        end
+
         -- alarm tone commands
 
         if (type(status[3]) == "table") and (#status[3] == 8) then
@@ -1362,6 +1404,27 @@ function iocontrol.update_unit_statuses(statuses)
         io.facility.ps.publish("po_pl_rate", po_pl_rate)
         io.facility.ps.publish("po_am_rate", po_am_rate)
         io.facility.ps.publish("spent_waste_rate", spent_rate)
+
+        -- forward units data to WebSocket if enabled
+        if websocket.is_enabled() then
+            local ws_units_data = {}
+            for i = 1, #io.units do
+                local unit = io.units[i]
+                ws_units_data[i] = {
+                    unit_id = unit.unit_id,
+                    connected = unit.connected,
+                    reactor_data = unit.reactor_data,
+                    boiler_data_tbl = unit.boiler_data_tbl,
+                    turbine_data_tbl = unit.turbine_data_tbl,
+                    tank_data_tbl = unit.tank_data_tbl,
+                    radiation = unit.radiation,
+                    waste_product = unit.waste_product,
+                    waste_stats = unit.waste_stats,
+                    status_lines = unit.status_lines
+                }
+            end
+            websocket.send_all_units_status(ws_units_data)
+        end
     end
 
     return valid
