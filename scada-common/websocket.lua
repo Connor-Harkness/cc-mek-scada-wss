@@ -89,7 +89,7 @@ function websocket.send(data_type, data)
     
     local message = {
         type = data_type,
-        timestamp = os.epoch("utc"),
+        timestamp = util.time(),  -- milliseconds since epoch (local)
         data = data
     }
     
@@ -163,18 +163,6 @@ function websocket.update()
            (time_now - ws_connection.reconnect_timer) >= ws_connection.reconnect_interval then
             ws_connection.reconnect_timer = time_now
             websocket.connect()
-        end
-    end
-    
-    -- check for incoming messages (if needed)
-    if ws_connection.connected and ws_connection.handle then
-        local success, message = pcall(function()
-            return ws_connection.handle.receive(0)  -- non-blocking receive
-        end)
-        
-        if success and message then
-            -- handle incoming messages if needed
-            log.debug("WS: Received message: " .. tostring(message))
         end
     end
 end
